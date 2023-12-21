@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "ggrama"
+version = "0.1.0"
+description = ""
+authors = ["Lee Braiden"]
+license = "GNU Affero General Public License, version 3 only"
+readme = "README.adoc"
+include = [
+	"src/ggrama/resources/**.ebnf",
+]
+packages = [
+	{ include="ggrama", from="src" }
+]
+
+[tool.poetry.scripts]
+ggrama = "ggrama.__main__:main"
+
+[tool.poetry.dependencies]
+python = ">=3.9"
+llama-cpp-python = "^0.2.24"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
