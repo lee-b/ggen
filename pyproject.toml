@@ -6,7 +6,7 @@ authors = ["Lee Braiden"]
 license = "GNU Affero General Public License, version 3 only"
 readme = "README.adoc"
 include = [
-	"src/ggrama/resources/**.ebnf",
+	"src/ggrama/resources/*/*",
 ]
 packages = [
 	{ include="ggrama", from="src" }
