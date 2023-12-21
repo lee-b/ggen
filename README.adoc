@@ -101,4 +101,5 @@ This tool is distributed under the GNU Affero General Public License, version 3 
 
 == Acknowledgments
 
-Credits to the Llama library contributors for their foundational work in the field of generative AI.
+Credits to the llama.cpp and llama-cpp-python libraries/toolkit contributors for their excellent project(s).
+
