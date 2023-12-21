@@ -8,7 +8,7 @@ To use this tool, you need `Python 3.9+` installed on your system.
 
 == Installation
 
-1. Install `pipx` per [The Official PipX instructions](https://github.com/pypa/pipx)
+1. Install `pipx` per https://github.com/pypa/pipx[The Official PipX instructions].
 2. Install the wheel file using `pipx`:
 +
 ```bash
