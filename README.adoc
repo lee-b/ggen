@@ -8,15 +8,12 @@ To use this tool, you need `Python 3.9+` installed on your system.
 
 == Installation
 
-You can install the python package via `pipx`:
-
+1. Install `pipx` per [The Official PipX instructions](https://github.com/pypa/pipx)
+2. Install the wheel file using `pipx`:
++
 ```bash
 pipx install *.whl
 ```
-
-You can also do the same with `pip`, but installing python packages globally with pip is dangerous. You should at least use a
-virtual env (`python3 -m venv`).  Teaching the use of python and pip is out of scope for this README though; please consult the python
-documentation.
 
 == Usage
 
