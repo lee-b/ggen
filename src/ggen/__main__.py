@@ -14,10 +14,9 @@ logger = logging.getLogger(__name__)
 class Config:
     """
     Config class to manage configuration for the generative AI tool.
-    This includes paths for models, schemas, and prompt templates, as well as settings like model name, schema name, etc.
     """
     def __init__(self):
-        # Defaults for names and direct paths
+        # Defaults
         self.model_name = None
         self.model_path = None
         self.schema_name = None
@@ -35,8 +34,8 @@ class Config:
 
     def load_defaults_from_standard_directories(self):
         # Using importlib.resources to access the package's resources directory
-        with resources.path('your_package_name', 'resources') as resources_path:
-            self._load_resources_from_directory(resources_path)
+        with resources.path(__package__, 'resources') as resources_path:
+            self._add_resources_from_directory(resources_path)
 
         # Standard directories
         standard_dirs = [
@@ -49,14 +48,20 @@ class Config:
 
         for d in standard_dirs:
             expanded_dir = Path(d).expanduser()
-            self._load_resources_from_directory(expanded_dir)
+            self._add_resources_from_directory(expanded_dir)
 
-    def _load_resources_from_directory(self, directory):
+    def _add_resources_from_directory(self, directory):
         if directory.is_dir():
             for subdir in ["models", "schemas", "prompt_templates"]:
                 path = directory / subdir
                 if path.is_dir():
-                    getattr(self, f"{subdir}_paths").append(path)
+                    # Correct the attribute names here
+                    if subdir == "models":
+                        self.model_paths.append(path)
+                    elif subdir == "schemas":
+                        self.schema_paths.append(path)
+                    elif subdir == "prompt_templates":
+                        self.prompt_template_paths.append(path)
 
     def load_from_file(self, config_file):
         with open(config_file, 'r') as f:
@@ -79,37 +84,41 @@ def build_argparser():
                              "a list of strings representing paths or names. Files are loaded in the order they are specified.")
     parser.add_argument("--debug", action="store_true",
                         help="Enable debug logging for detailed output.")
-    parser.add_argument("--input", "-i", dest="input_file", type=str, default=None,
+    parser.add_argument("--input", "-i", dest="input_file", type=str,
                         help="Path to a file containing the prompt.")
-    parser.add_argument("--output", "-o", dest="output_file", type=str, default=None,
+    parser.add_argument("--output", "-o", dest="output_file", type=str,
                         help="Path to the output file where the result will be saved. If not specified, output is "
                              "printed to standard output.")
-    parser.add_argument("--model-name", "-m", dest="model_name", type=str, default=None,
+    parser.add_argument("--model-name", "-m", dest="model_name", type=str,
                         help="Name of the model to be used for generation. The model must be located in one of the "
                              "configured model paths.")
-    parser.add_argument("--model-path", "-M", dest="model_path", type=str, default=None,
+    parser.add_argument("--model-path", "-M", dest="model_path", type=str,
                         help="Direct path to the directory containing the AI model. Overrides model path configurations.")
-    parser.add_argument("--schema-name", "-s", dest="schema_name", type=str, default=None,
+    parser.add_argument("--schema-name", "-s", dest="schema_name", type=str,
                         help="Name of the schema file to be used. The schema defines the grammar for the AI output.")
-    parser.add_argument("--schema-path", "-S", dest="schema_path", type=str, default=None,
+    parser.add_argument("--schema-path", "-S", dest="schema_path", type=str,
                         help="Direct path to the directory containing the schema file. Overrides schema path configurations.")
-    parser.add_argument("--prompt-template", "-t", dest="prompt_template_file", type=str, default=None,
-                        help="Name of the prompt template file. The template structures the input prompt.")
-    parser.add_argument("--prompt-template-path", "-T", dest="prompt_template_path", type=str, default=None,
+    parser.add_argument("--prompt-template", "-t", dest="prompt_template_file", type=str, default='instruct',
+                        help="Name of the prompt template file. The template structures the input prompt. Default: 'instruct'.")
+    parser.add_argument("--prompt-template-path", "-T", dest="prompt_template_path", type=str,
                         help="Direct path to the directory containing prompt templates. Overrides prompt template path configurations.")
     parser.add_argument("prompt", nargs="*", help="Direct input prompt. Used if no prompt file is specified. Multiple arguments are concatenated.")
+
     return parser
 
 
 def load_prompt_template(prompt_template_paths, prompt_template_name):
     if prompt_template_name is None:
         raise ValueError("No prompt template name provided")
+
     for path in prompt_template_paths:
-        template_path = Path(path) / prompt_template_name
+        template_path = Path(path) / f"{prompt_template_name}.txt"
+
         if template_path.exists():
             with open(template_path, 'r') as f:
                 return f.read()
-    raise FileNotFoundError(f"Prompt template {prompt_template_name} not found in paths {prompt_template_paths}")
+
+    raise FileNotFoundError(f"Prompt template {prompt_template_name}.txt not found in paths {prompt_template_paths}")
 
 
 def find_model_path(model_paths, model_name):
@@ -137,13 +146,13 @@ def load_schema(schema_paths, schema_name):
         schema_path_with_extension = Path(path) / f"{schema_name}.gbnf"
         if schema_path_with_extension.exists():
             with open(schema_path_with_extension, 'r') as f:
-                return json.load(f)
+                return f.read()
 
     raise FileNotFoundError(f"Schema {schema_name} not found in paths {schema_paths} and no .gbnf extension file found")
 
 
-def generate_with_grammar(model, prompt_template, prompt, grammar):
-    full_prompt = prompt_template.format(*prompt)
+def generate_with_grammar(model, prompt_template, prompt, input_data, grammar):
+    full_prompt = prompt_template.format(prompt=prompt, input_data=input_data)
     response = model(full_prompt, grammar=grammar, max_tokens=-1)
     result = json.loads(response['choices'][0]['text'])
     return result
@@ -170,16 +179,21 @@ def main():
     # Read prompt from stdin, input file, or direct argument
     if args.input_file:
         with open(args.input_file, 'r') as file:
-            prompt = file.read()
-    elif args.prompt:
-        prompt = ' '.join(args.prompt)
+            input_data = file.read()
     else:
-        prompt = sys.stdin.read()
+        input_data = ''
+
+    prompt = ' '.join(args.prompt)
+    prompt = prompt.strip()
+
+    if prompt == "":
+        logger.fatal("No prompt given!")
+        return 1
 
     # Load resources based on configuration and command-line arguments
-    prompt_template = load_prompt_template([prompt_template_path] if prompt_template_path else config.prompt_template_paths, prompt_template_file)
-    model_path = find_model_path([model_path] if model_path else config.model_paths, model_name)
-    schema = load_schema([schema_path] if schema_path else config.schema_paths, schema_name)
+    prompt_template = load_prompt_template(config.prompt_template_paths + ([prompt_template_path] if prompt_template_path else []), prompt_template_file)
+    model_path = find_model_path(config.model_paths + ([model_path] if model_path else []), model_name)
+    schema = load_schema(config.schema_paths + ([schema_path] if schema_path else []), schema_name)
 
     # Validate critical components
     if not schema:
@@ -187,11 +201,11 @@ def main():
         return 1
 
     # Initialize the Llama model and grammar
-    grammar = LlamaGrammar.from_json(schema)
-    llm = Llama(model_path if model_path else "default-model")
+    grammar = LlamaGrammar.from_string(schema, verbose=False)
+    llm = Llama(str(model_path), verbose=False)
 
     # Generate output with grammar
-    result = generate_with_grammar(llm, prompt_template, prompt, grammar)
+    result = generate_with_grammar(llm, prompt_template, prompt, input_data, grammar)
 
     # Write result to output file or stdout
     if args.output_file:

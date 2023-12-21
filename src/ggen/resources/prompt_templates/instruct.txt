@@ -1,0 +1,6 @@
+Instructions for processing the given input, to generate an output file suitable for cat'ing to a unix command pipeline.
+Complete the output to match the instructions, without embellishment.
+
+{prompt}
+
+{input_data}

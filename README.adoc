@@ -1,0 +1,75 @@
+= Generative AI Command-Line Tool
+
+This is a Python command-line tool for generative AI. It generates output based on given input prompts, templates, and AI models. The tool supports loading prompts from files or standard input and can use specified or default paths to locate models and templates.
+
+== Prerequisites
+
+To use this tool, you need `Python 3.9+` installed on your system.
+
+== Installation
+
+You can install the python package via `pipx`:
+
+```bash
+pipx install *.whl
+```
+
+You can also do the same with `pip`, but installing python packages globally with pip is dangerous. You should at least use a
+virtual env (`python3 -m venv`).  Teaching the use of python and pip is out of scope for this README though; please consult the python
+documentation.
+
+== Usage
+
+For full and up to date usage instructions, run `ggen --help`.
+
+As an overview, the following options are supported:
+
+```bash
+ggen [options] [prompt]
+
+- `[options]` include:
+  - `--config-file` or `-c`: Path to a JSON configuration file.
+  - `--debug`: Enable debug logging for detailed output.
+  - `--input` or `-i`: Path to a file containing the prompt.
+  - `--output` or `-o`: Path to the output file where the result will be saved.
+  - `--model-name` or `-m`: Name of the model to be used for generation.
+  - `--model-path` or `-M`: Direct path to the directory containing the AI model.
+  - `--schema-name` or `-s`: Name of the schema file to be used.
+  - `--schema-path` or `-S`: Direct path to the directory containing the schema file.
+  - `--prompt-template` or `-t`: Name of the prompt template file.
+  - `--prompt-template-path` or `-T`: Direct path to the directory containing prompt templates.
+
+- `[prompt]` is the direct input prompt.
+```
+
+== Configuration
+
+The tool uses a `Config` class to manage configuration. You can load configuration from JSON files and override it with command-line arguments.
+
+== Resources
+
+This tool uses standard directories and importlib.resources to access resources such as models, schemas, and prompt templates. You can configure these paths in the `Config` class or provide them as command-line arguments.
+
+== Generating Output
+
+The tool generates output using a generative AI model and a grammar defined in a schema. The generated result can be saved to an output file or printed to standard output.
+
+== Example
+
+Here's an example of how to use the tool:
+
+```bash
+python generative_ai.py -c config.json -i input.txt -o output.json
+```
+
+This command loads configuration from `config.json`, reads the input prompt from `input.txt`, and saves the generated output to `output.json`.
+
+== License
+
+This tool is provided under the [License Name] license. See the LICENSE file for more details.
+
+== Acknowledgments
+
+Special thanks to the developers of the Llama library used in this tool.
+
+For more information and detailed usage, please refer to the documentation.
