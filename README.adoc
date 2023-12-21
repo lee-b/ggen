@@ -63,7 +63,7 @@ This command loads configuration from `config.json`, reads the input prompt from
 
 == License
 
-This tool is provided under the [License Name] license. See the LICENSE file for more details.
+This tool is provided under the GNU Affero General Public License, version 3 only. See the LICENSE file for more details.
 
 == Acknowledgments
 
