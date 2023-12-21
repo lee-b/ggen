@@ -1,72 +1,104 @@
-= Generative AI Command-Line Tool
+= ggen: Generative AI Command-Line Tool
 
-This is a Python command-line tool for generative AI. It generates output based on given input prompts, templates, and AI models. The tool supports loading prompts from files or standard input and can use specified or default paths to locate models and templates.
+ggen is a command-line utility designed for generating outputs from structured prompts using AI models and grammars. It's optimized for use both as a standalone command-line tool and within Unix-like pipelines, providing flexibility in various scripting and automation scenarios.
+
+== Technical Benefits
+
+ggen features:
+
+* Flexibility: Suited for various input formats and customizable through templates and schemas.
+* Integration: Designed for seamless use in Unix pipelines and automated scripts.
+* Extensibility: Easily adaptable to different AI models and use-cases through configuration files.
 
 == Prerequisites
 
-To use this tool, you need `Python 3.9+` installed on your system.
+* Python 3.9 or higher.
 
 == Installation
 
-1. Install `pipx` per https://github.com/pypa/pipx[The Official PipX instructions].
-2. Install the wheel file using `pipx`:
+. Install `pipx` following [The Official PipX instructions](https://github.com/pypa/pipx).
+. Install ggen using pipx:
 +
-```bash
+[source,bash]
+----
 pipx install *.whl
-```
+----
 
-== Usage
-
-For full and up to date usage instructions, run `ggen --help`.
-
-As an overview, the following options are supported:
-
-```bash
-ggen [options] [prompt]
-
-- `[options]` include:
-  - `--config-file` or `-c`: Path to a JSON configuration file.
-  - `--debug`: Enable debug logging for detailed output.
-  - `--input` or `-i`: Path to a file containing the prompt.
-  - `--output` or `-o`: Path to the output file where the result will be saved.
-  - `--model-name` or `-m`: Name of the model to be used for generation.
-  - `--model-path` or `-M`: Direct path to the directory containing the AI model.
-  - `--schema-name` or `-s`: Name of the schema file to be used.
-  - `--schema-path` or `-S`: Direct path to the directory containing the schema file.
-  - `--prompt-template` or `-t`: Name of the prompt template file.
-  - `--prompt-template-path` or `-T`: Direct path to the directory containing prompt templates.
-
-- `[prompt]` is the direct input prompt.
-```
+Upon installation, `ggen` is available as a command in your system.
 
 == Configuration
 
-The tool uses a `Config` class to manage configuration. You can load configuration from JSON files and override it with command-line arguments.
+Configuration is managed through JSON files, allowing detailed control over models, schemas, and prompt templates. These configurations can be overridden with command-line arguments.
 
-== Resources
+== Usage
 
-This tool uses standard directories and importlib.resources to access resources such as models, schemas, and prompt templates. You can configure these paths in the `Config` class or provide them as command-line arguments.
+Run ggen with:
+
+[source,bash]
+----
+ggen [options] [prompt]
+----
+
+.Options
+[options="header"]
+|===
+| Option | Description
+
+| `-c`, `--config-file`
+| Path to a JSON configuration file. Supports multiple files.
+
+| `--debug`
+| Enable debug logging for verbose output.
+
+| `-i`, `--input`
+| Path for the input prompt file.
+
+| `-o`, `--output`
+| Path for the output file. Defaults to standard output if not specified.
+
+| `-m`, `--model-name`
+| Name of the AI model.
+
+| `-M`, `--model-path`
+| Path to the AI model directory.
+
+| `-s`, `--schema-name`
+| Name of the schema file for grammar.
+
+| `-S`, `--schema-path`
+| Path to the schema file directory.
+
+| `-t`, `--prompt-template`
+| Name of the prompt template file. Defaults to 'instruct'.
+
+| `-T`, `--prompt-template-path`
+| Path to the prompt template directory.
+
+|===
++
+The `[prompt]` argument is the direct input for generation. It can be passed as a command-line argument if no input file is specified.
+
+For detailed options, run `ggen --help`.
 
 == Generating Output
 
-The tool generates output using a generative AI model and a grammar defined in a schema. The generated result can be saved to an output file or printed to standard output.
+Outputs are generated based on a combination of AI models, grammars defined in schema files, and structured prompts. This allows for high versatility in output generation, tailored to specific requirements.
 
 == Example
 
-Here's an example of how to use the tool:
+Generate output using a specific configuration and input:
 
-```bash
-python generative_ai.py -c config.json -i input.txt -o output.json
-```
+[source,bash]
+----
+ggen -c config.json -i input.txt -o output.json
+----
 
-This command loads configuration from `config.json`, reads the input prompt from `input.txt`, and saves the generated output to `output.json`.
+This command utilizes configurations from `config.json`, reads the prompt from `input.txt`, and writes the output to `output.json`.
 
 == License
 
-This tool is provided under the GNU Affero General Public License, version 3 only. See the LICENSE file for more details.
+This tool is distributed under the GNU Affero General Public License, version 3 _only_. Consult the LICENSE file for more details.
 
 == Acknowledgments
 
-Special thanks to the developers of the Llama library used in this tool.
-
-For more information and detailed usage, please refer to the documentation.
+Credits to the Llama library contributors for their foundational work in the field of generative AI.
