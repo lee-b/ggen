@@ -16,7 +16,7 @@ ggen features:
 
 == Installation
 
-. Install `pipx` following [The Official PipX instructions](https://github.com/pypa/pipx).
+. Install `pipx` following https://github.com/pypa/pipx[The Official PipX instructions].
 . Install ggen using pipx:
 +
 [source,bash]
