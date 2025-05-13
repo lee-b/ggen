@@ -1,6 +1,6 @@
 = ggen: Generative AI Command-Line Tool
 
-ggen is a command-line utility designed for generating outputs from structured prompts using AI models and grammars. It's optimized for use both as a standalone command-line tool and within Unix-like pipelines, providing flexibility in various scripting and automation scenarios.
+ggen is a command-line utility designed for generating structured outputs from prompts using AI models and grammars. It's optimized for use both as a standalone command-line tool and within Unix-like pipelines, providing flexibility in various scripting and automation scenarios.
 
 == Technical Benefits
 
